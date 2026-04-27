@@ -2,13 +2,10 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#a51c30">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Inventário Spiltag</title>
     
-    <style>
+   <style>
         :root { --border: #000; --header-bg: #e9e9e9; --accent: #a51c30; --btn-grey: #666666; --btn-blue: #0056b3; }
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
 
@@ -56,49 +53,38 @@
         input[type="number"], input[type="text"] { width: 95%; border: none; text-align: center; background: transparent; font-size: 13px; font-weight: bold; }
         .res-val { font-weight: bold; font-size: 14px; }
 
-        /* MODAL DE AVISO PERSONALIZADO */
-        #custom-alert {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); z-index: 10000; align-items: center; justify-content: center;
-        }
-        .alert-content {
-            background: white; padding: 25px; border-radius: 10px; text-align: center;
-            max-width: 400px; width: 85%; border-top: 8px solid var(--accent);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-        }
-        .alert-content h2 { color: var(--accent); margin-top: 0; }
-        .alert-content p { color: #333; font-weight: bold; margin: 20px 0; line-height: 1.4; }
-        
-        .alert-buttons { display: flex; gap: 10px; justify-content: center; }
-        .btn-alert-ok { background: var(--accent); color: white; border: none; padding: 12px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 15px; }
-        .btn-alert-cancel { background: var(--btn-grey); color: white; border: none; padding: 12px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 15px; }
-
-        /* ESTILOS DE LOGO E CÓDIGOS */
-        .logo-text { font-weight: bold; font-size: 30px !important; color: var(--accent) !important; }
-        .sub-cod { font-size: 10px !important; font-weight: normal !important; color: #ddd !important; display: block; }
-
+        /* --- CONFIGURAÇÃO AUTOMÁTICA DE IMPRESSÃO (PAISAGEM) --- */
         @media print {
-            @page { size: portrait; margin: 0.5cm; }
-            .no-print, #login-screen, #custom-alert { display: none !important; }
-            body { margin: 0; padding: 0; zoom: 75%; } 
-            .container { overflow: visible !important; }
-            table { min-width: 100% !important; width: 100% !important; table-layout: fixed !important; font-size: 10px !important; }
-            th, td { padding: 2px 1px !important; border: 1px solid #000 !important; }
-            .bg-spiltag { background-color: var(--accent) !important; -webkit-print-color-adjust: exact; color: white !important; }
-            .bg-grey { background-color: var(--header-bg) !important; -webkit-print-color-adjust: exact; }
-            .sub-cod { color: white !important; -webkit-print-color-adjust: exact; font-size: 9px !important; }
+            @page { 
+                size: landscape; /* Força o layout deitado */
+                margin: 0.5cm;   /* Margens curtas para aproveitar a folha */
+            }
+            
+            body { background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print, #login-screen { display: none !important; }
+            #app-content { display: block !important; width: 100% !important; }
+            .container { overflow: visible !important; width: 100% !important; }
+            
+            table { 
+                width: 100% !important; 
+                min-width: 100% !important; 
+                zoom: 0.78; /* Escala para caber em uma folha só */
+                table-layout: fixed !important;
+            }
+            
+            th, td { 
+                border: 1px solid #000 !important;
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact;
+            }
+            
+            .bg-spiltag { background-color: #a51c30 !important; color: white !important; }
+            .bg-grey { background-color: #e9e9e9 !important; }
+            input { border: none !important; background: transparent !important; }
         }
     </style>
 </head>
 <body>
-
-    <div id="custom-alert">
-        <div class="alert-content">
-            <h2 id="alert-title">Atenção!</h2>
-            <p id="alert-msg"></p>
-            <div class="alert-buttons" id="alert-btns"></div>
-        </div>
-    </div>
 
     <div id="login-screen">
         <div class="login-box">
@@ -114,31 +100,33 @@
         <div class="no-print">
             <button class="btn-pdf" onclick="window.print()">IMPRIMIR PDF</button>
             <button class="btn-email" onclick="enviarEmail()">ENVIAR E-MAIL</button>
-            <button class="btn-clear" onclick="confirmarLimpeza()">LIMPAR TUDO</button>
+            <button class="btn-clear" onclick="limparCampos()">LIMPAR TUDO</button>
         </div>
 
         <div class="container">
             <table>
                 <colgroup>
-                    <col style="width: 15%;"> <col style="width: 11%;"> <col style="width: 5%;"> 
+                    <col style="width: 15%;"> 
+                    <col style="width: 11%;"> 
+                    <col style="width: 5%;"> 
                     <col style="width: 8%;"> <col style="width: 4.4%;"><col style="width: 4.4%;"><col style="width: 4.4%;"><col style="width: 4.4%;"> 
                     <col style="width: 4.4%;"><col style="width: 4.4%;"><col style="width: 4.4%;"><col style="width: 4.4%;"> 
                     <col style="width: 5.3%;"><col style="width: 5.3%;"><col style="width: 5.3%;"> 
                 </colgroup>
                 <tr>
-                    <td rowspan="4" class="logo-text">SPILTAG</td>
+                    <td rowspan="4" style="font-weight:bold; font-size:30px; color:var(--accent)">SPILTAG</td>
                     <td colspan="2" id="current-time">--/--/---- --:--:--</td>
                     <td class="bg-spiltag">SALDO</td>
-                    <td class="bg-spiltag" colspan="4">PET VIRGEM <span class="sub-cod">(0010006)</span></td>
-                    <td class="bg-spiltag" colspan="4">PCR 0T <span class="sub-cod">(0010048)</span></td>
-                    <td class="bg-spiltag" colspan="3">PCR 10T <span class="sub-cod">(0010030)</span></td>
+                    <td class="bg-spiltag" colspan="4">PET VIRGEM</td>
+                    <td class="bg-spiltag" colspan="4">PCR 0T</td>
+                    <td class="bg-spiltag" colspan="3">PCR 10T</td>
                 </tr>
                 <tr>
                     <td class="bg-spiltag" colspan="2">RESPONSÁVEL</td>
                     <td class="bg-spiltag">SISTEMA</td>
-                    <td colspan="4"><input type="number" id="sys_v" class="editable res-val" oninput="calc()" onkeydown="handleEnter(event, 'sys_0t')" placeholder=""></td>
-                    <td colspan="4"><input type="number" id="sys_0t" class="editable res-val" oninput="calc()" onkeydown="handleEnter(event, 'sys_10t')" placeholder=""></td>
-                    <td colspan="3"><input type="number" id="sys_10t" class="editable res-val" oninput="calc()" onkeydown="handleEnter(event, 'peso-0')" placeholder=""></td>
+                    <td colspan="4"><input type="number" id="sys_v" class="editable" oninput="calc()" value="0"></td>
+                    <td colspan="4"><input type="number" id="sys_0t" class="editable" oninput="calc()" value="0"></td>
+                    <td colspan="3"><input type="number" id="sys_10t" class="editable" oninput="calc()" value="0"></td>
                 </tr>
                 <tr>
                     <td rowspan="2" colspan="2"><input type="text" id="resp" class="editable" placeholder="Seu Nome"></td>
@@ -207,69 +195,24 @@
             {p: "Bags avulsos (dinamo)", l: "Dinamo", c: "Pesag.", type: "MIX"}
         ];
 
-        function mostrarAlerta(msg, tipo = 'aviso') {
-            const modal = document.getElementById('custom-alert');
-            const title = document.getElementById('alert-title');
-            const msgEl = document.getElementById('alert-msg');
-            const btnArea = document.getElementById('alert-btns');
-            msgEl.innerText = msg;
-            btnArea.innerHTML = "";
-            if (tipo === 'confirmar') {
-                title.innerText = "Confirmar Ação";
-                btnArea.innerHTML = `<button class="btn-alert-ok" onclick="executarLimpeza()">SIM, LIMPAR</button><button class="btn-alert-cancel" onclick="fecharAlerta()">CANCELAR</button>`;
-            } else {
-                title.innerText = "Atenção!";
-                btnArea.innerHTML = `<button class="btn-alert-ok" onclick="fecharAlerta()">ENTENDI</button>`;
-            }
-            modal.style.display = 'flex';
-        }
-
-        function fecharAlerta() { document.getElementById('custom-alert').style.display = 'none'; }
-        function confirmarLimpeza() { mostrarAlerta("Deseja realmente limpar todos os dados do inventário? Essa ação não pode ser desfeita.", 'confirmar'); }
-        function executarLimpeza() {
-            document.querySelectorAll('.peso').forEach(i => i.value = "");
-            document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
-            document.getElementById('sys_v').value = document.getElementById('sys_0t').value = document.getElementById('sys_10t').value = "";
-            document.getElementById('resp').value = "";
-            calc();
-            fecharAlerta();
-        }
-
         function render() {
             const body = document.getElementById('table-body');
             body.innerHTML = "";
             itens.forEach((it, i) => {
                 const tr = document.createElement('tr');
                 const isMix = it.type === "MIX";
-                const nextId = (i < itens.length - 1) ? `peso-${i+1}` : null;
                 tr.innerHTML = `
                     <td style="text-align:left;">${it.p}</td><td>${it.l}</td><td>${it.c}</td>
-                    <td><input type="number" class="peso editable" id="peso-${i}" oninput="calc()" onkeydown="handleEnter(event, ${nextId ? `'${nextId}'` : 'null'})" placeholder=""></td>
-                    ${[25,50,75,100].map(v => `<td><input type="checkbox" name="m${i}" onclick="unck(this, ${i});calc()" data-type="0t" data-val="${v}" ${!isMix?'disabled':''}></td>`).join('')}
-                    ${[25,50,75,100].map(v => `<td><input type="checkbox" name="m${i}" onclick="unck(this, ${i});calc()" data-type="10t" data-val="${v}" ${!isMix?'disabled':''}></td>`).join('')}
+                    <td><input type="number" class="peso editable" id="peso-${i}" oninput="calc()"></td>
+                    ${[25,50,75,100].map(v => `<td><input type="checkbox" name="m${i}" onclick="unck(this);calc()" data-type="0t" data-val="${v}" ${!isMix?'disabled':''}></td>`).join('')}
+                    ${[25,50,75,100].map(v => `<td><input type="checkbox" name="m${i}" onclick="unck(this);calc()" data-type="10t" data-val="${v}" ${!isMix?'disabled':''}></td>`).join('')}
                     <td class="rv">0.0</td><td class="r0">0.0</td><td class="r10">0.0</td>
                 `;
                 body.appendChild(tr);
             });
         }
 
-        function handleEnter(event, nextId) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                if (nextId) document.getElementById(nextId).focus();
-                else { calc(); const sV = document.getElementById('sys_v').value; const s0 = document.getElementById('sys_0t').value; const s10 = document.getElementById('sys_10t').value; if (!sV || !s0 || !s10) { mostrarAlerta("Contagem finalizada! Agora informe o Saldo no Sistema no topo da tabela."); window.scrollTo({top: 0, behavior: 'smooth'}); } else { mostrarAlerta("Contagem finalizada com sucesso!"); } }
-            }
-        }
-
-        function unck(el, index) { 
-            const pesoInput = document.getElementById(`peso-${index}`);
-            if (el.checked && (!pesoInput.value || parseFloat(pesoInput.value) <= 0)) {
-                el.checked = false;
-                mostrarAlerta("Informe o peso encontrado neste ponto antes de selecionar a porcentagem do Mix.");
-                return;
-            }
-            document.getElementsByName(el.name).forEach(c => { if(c !== el) c.checked = false; }); 
-        }
+        function unck(el) { document.getElementsByName(el.name).forEach(c => { if(c !== el) c.checked = false; }); }
 
         function calc() {
             let tV = 0, t0 = 0, t10 = 0;
@@ -293,17 +236,9 @@
             document.getElementById('tot_v').innerText = document.getElementById('som_v').innerText = tV.toFixed(2);
             document.getElementById('tot_0t').innerText = document.getElementById('som_0t').innerText = t0.toFixed(2);
             document.getElementById('tot_10t').innerText = document.getElementById('som_10t').innerText = t10.toFixed(2);
-            const sysV = parseFloat(document.getElementById('sys_v').value) || 0;
-            const sys0 = parseFloat(document.getElementById('sys_0t').value) || 0;
-            const sys10 = parseFloat(document.getElementById('sys_10t').value) || 0;
-            const dV = tV - sysV; const d0 = t0 - sys0; const d10 = t10 - sys10;
-            document.getElementById('dif_v').innerText = dV.toFixed(2);
-            document.getElementById('dif_0t').innerText = d0.toFixed(2);
-            document.getElementById('dif_10t').innerText = d10.toFixed(2);
-            [ {id:'dif_v', v:dV}, {id:'dif_0t', v:d0}, {id:'dif_10t', v:d10} ].forEach(d => {
-                const el = document.getElementById(d.id);
-                el.style.color = d.v < 0 ? '#d00000' : (d.v > 0 ? '#008000' : '#000');
-            });
+            document.getElementById('dif_v').innerText = (tV - (parseFloat(document.getElementById('sys_v').value) || 0)).toFixed(2);
+            document.getElementById('dif_0t').innerText = (t0 - (parseFloat(document.getElementById('sys_0t').value) || 0)).toFixed(2);
+            document.getElementById('dif_10t').innerText = (t10 - (parseFloat(document.getElementById('sys_10t').value) || 0)).toFixed(2);
         }
 
         function validarAcesso() {
@@ -314,35 +249,61 @@
                 document.getElementById('app-content').style.display = 'block';
                 render();
                 setInterval(() => { document.getElementById('current-time').innerText = new Date().toLocaleString(); }, 1000);
+                resetTimer();
             } else { alert("Acesso Negado!"); }
         }
 
+        let idle;
+        function resetTimer() {
+            clearTimeout(idle);
+            idle = setTimeout(() => { location.reload(); }, 1200000); 
+        }
+        window.onmousemove = window.onkeydown = window.ontouchstart = window.onclick = resetTimer;
+
+        function limparCampos() {
+            if(confirm("Zerar tudo?")) {
+                document.querySelectorAll('.peso').forEach(i => i.value = "");
+                document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+                document.getElementById('sys_v').value = document.getElementById('sys_0t').value = document.getElementById('sys_10t').value = 0;
+                calc();
+            }
+        }
+
         function enviarEmail() {
-            const resp = document.getElementById('resp').value;
-            const sysV = document.getElementById('sys_v').value;
-            const sys0 = document.getElementById('sys_0t').value;
-            const sys10 = document.getElementById('sys_10t').value;
-            if (!resp) { mostrarAlerta("Preencha o seu nome no campo Responsável."); return; }
-            if (!sysV || !sys0 || !sys10) { mostrarAlerta("Preencha os três saldos do sistema no topo da tabela."); window.scrollTo({top: 0, behavior: 'smooth'}); return; }
-            let fP = false; document.querySelectorAll('.peso').forEach(i => { if (i.value === "") fP = true; });
-            if (fP) { mostrarAlerta("Existem pontos de contagem sem peso informado na tabela."); return; }
-            const dt = document.getElementById('current-time').innerText;
-            const tV = document.getElementById('tot_v').innerText;
-            const t0 = document.getElementById('tot_0t').innerText;
-            const t10 = document.getElementById('tot_10t').innerText;
-            const dV = document.getElementById('dif_v').innerText;
-            const d0 = document.getElementById('dif_0t').innerText;
-            const d10 = document.getElementById('dif_10t').innerText;
-            const ass = `Resumo de Inventário - ${resp}`;
-            const corpo = `Relatório de Inventário de Resinas%0D%0AData/Hora: ${dt}%0D%0AResponsável: ${resp}%0D%0A%0D%0A1. PET VIRGEM (0010006)%0D%0A- Físico: ${tV} KG%0D%0A- Sistema: ${sysV} KG%0D%0A- Diferença: ${dV} KG%0D%0A%0D%0A2. PCR 0T (0010048)%0D%0A- Físico: ${t0} KG%0D%0A- Sistema: ${sys0} KG%0D%0A- Diferença: ${d0} KG%0D%0A%0D%0A3. PCR 10T (0010030)%0D%0A- Físico: ${t10} KG%0D%0A- Sistema: ${sys10} KG%0D%0A- Diferença: ${d10} KG%0D%0A%0D%0A-------------------------------------------%0D%0AEnviado via App Inventário Spiltag.`;
-            window.location.href = `mailto:joao.pedroso@spiltag.com?subject=${encodeURIComponent(ass)}&body=${corpo}`;
+            const responsavel = document.getElementById('resp').value || "N/A";
+            const dataHora = document.getElementById('current-time').innerText;
+            const totV = document.getElementById('tot_v').innerText;
+            const tot0 = document.getElementById('tot_0t').innerText;
+            const tot10 = document.getElementById('tot_10t').innerText;
+            const sysV = document.getElementById('sys_v').value || "0";
+            const sys0 = document.getElementById('sys_0t').value || "0";
+            const sys10 = document.getElementById('sys_10t').value || "0";
+            const difV = document.getElementById('dif_v').innerText;
+            const dif0 = document.getElementById('dif_0t').innerText;
+            const dif10 = document.getElementById('dif_10t').innerText;
+
+            const destinatario = "joao.pedroso@spiltag.com"; 
+            const assunto = `Resumo de Inventário - ${responsavel}`;
+            const corpo = `Relatório de Inventário de Resinas%0D%0A` +
+                          `Data/Hora: ${dataHora}%0D%0A` +
+                          `Responsável: ${responsavel}%0D%0A%0D%0A` +
+                          `1. PET VIRGEM (0010006)%0D%0A` +
+                          `- Físico: ${totV} KG%0D%0A` +
+                          `- Sistema: ${sysV} KG%0D%0A` +
+                          `- Diferença: ${difV} KG%0D%0A%0D%0A` +
+                          `2. PCR 0T (0010048)%0D%0A` +
+                          `- Físico: ${tot0} KG%0D%0A` +
+                          `- Sistema: ${sys0} KG%0D%0A` +
+                          `- Diferença: ${dif0} KG%0D%0A%0D%0A` +
+                          `3. PCR 10T (0010030)%0D%0A` +
+                          `- Físico: ${tot10} KG%0D%0A` +
+                          `- Sistema: ${sys10} KG%0D%0A` +
+                          `- Diferença: ${dif10} KG%0D%0A%0D%0A` +
+                          `-------------------------------------------%0D%0A` +
+                          `Enviado via App Inventário Spiltag.`;
+
+            window.location.href = `mailto:${destinatario}?subject=${encodeURIComponent(assunto)}&body=${corpo}`;
         }
     </script>
-    <script>
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
-  }
-    </script>
-
 </body>
 </html>
