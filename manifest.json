@@ -1,0 +1,21 @@
+{
+  "name": "Inventário Spiltag",
+  "short_name": "Spiltag",
+  "description": "App de inventário industrial de resinas",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#a51c30",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192.png?text=S",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512.png?text=Spiltag",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
