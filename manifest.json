@@ -2,7 +2,7 @@
   "name": "Inventário Spiltag",
   "short_name": "Spiltag",
   "description": "App de inventário industrial de resinas",
-  "start_url": "./index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#a51c30",
